@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-
+require("dotenv").config();
 const httpError = require("../model/http-error");
 const { get } = require("mongoose");
 
@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
         if (!getToken) {
             throw new Error("Auth failed");
         }
-        const verify = jwt.verify(getToken, "HAlfBoil");
+        const verify = jwt.verify(getToken, process.env.PRIVATE_ACCESS_TOKEN);
         req.userData = { userId: verify.userId, email: verify.email };
         next();
     } catch (error) {

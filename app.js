@@ -7,6 +7,7 @@ const todoRoute = require("./routes/todoList-route");
 const httpError = require("./model/http-error");
 const app = express();
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
@@ -20,11 +21,12 @@ app.use("/api", userRoute);
 
 app.use("/todoapi", todoRoute);
 
-mongoose.connect("mongodb+srv://arun:6fJNuO5PfGNV9t7Y@cluster0.esywl.gcp.mongodb.net/TodoList?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://arun:6fJNuO5PfGNV9t7Y@cluster0.esywl.gcp.mongodb.net/TodoList?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
     .then(() => {
         console.log("Connected to DB");
         app.listen(5000);
     }).catch((error) => {
+        console.log(error)
         console.log("Error in connecting DB")
     });
 app.use((req, res, next) => {

@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+require("dotenv").config();
 const userSchema = require("../model/schemas/user-schema");
 const HttpError = require("../model/http-error");
 
@@ -29,7 +29,8 @@ const signup = async (req, res, next) => {
     }
     let token;
     try {
-        token = jwt.sign({ userId: createdUser.id, email: createdUser.email }, "HAlfBoil", { expiresIn: "2h" })
+        console.log(process.env.PRIVATE_ACCESS_TOKEN);
+        token = jwt.sign({ userId: createdUser.id, email: createdUser.email }, process.env.PRIVATE_ACCESS_TOKEN, { expiresIn: "1h" })
     } catch (error) {
         return new HttpError("SignUp Failed! Please try again", 500);
     }
@@ -59,7 +60,8 @@ const login = async (req, res, next) => {
     }
     let token;
     try {
-        token = jwt.sign({ userId: checkExistingUser.id, email: checkExistingUser.email }, "HAlfBoil", { expiresIn: "1h" })
+        token = jwt.sign({ userId: checkExistingUser.id, email: checkExistingUser.email }, process.env.PRIVATE_ACCESS_TOKEN, { expiresIn: "1h" })
+        console.log(token);
     } catch (error) {
         return next(new HttpError("Login Failed! Please try again", 500));
     }
