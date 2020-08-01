@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const todoListSchema = require("../model/schemas/todoList-schema");
 const httpError = require("../model/http-error");
 const User = require("../model/schemas/user-schema");
+const { compareSync } = require("bcryptjs");
 
 const createTodoList = async (req, res, next) => {
     let { todos, creator } = req.body;
@@ -65,10 +66,36 @@ const updateTodosByUid = async (req, res, next) => {
             "todos.$.createdDate": createdDate,
             "todos.$.updatedDate": updatedDate
         }
-    }, { 'new': true, 'safe': true, 'upsert': true, 'multi': true }, (error) => {
+    }, { 'new': true, 'safe': true }, (error) => {
         if (error) return next(new httpError("Error occured while updating Todo", 500));
-    })
+    });
     res.status(201).json({ result: "Updated successfully" });
+}
+
+const addTodosByUid = async (req, res, next) => {
+    const { uid } = req.params;
+    let checkUser;
+    try {
+        checkUser = await User.findById(uid);
+    } catch (error) {
+        error = new httpError("User not available while creating Todo", 500);
+        return next(error);
+    }
+    if (!checkUser) return next(new httpError("Specified user not available while creating Todos", 404));
+    console.log(req.body);
+    try {
+        const addTodo = await todoListSchema.findOneAndUpdate({ "creator": uid }, {
+            "$push": { "todos": req.body }
+        }, { upsert: true, new: true }, (error, result) => {
+            if (error) return next(new httpError("Error Occured while adding todos", 404));
+            res.status(201).json({ result: result.todos })
+        })
+
+    } catch (error) {
+        error = new httpError("Error Occured while adding todos", 500);
+        return next(error);
+    }
+
 }
 
 const getTodoList = async (req, res, next) => {
@@ -187,3 +214,4 @@ exports.deleteAllTodos = deleteAllTodos;
 exports.getTodoListByUid = getTodoListByUid;
 exports.updateTodosByUid = updateTodosByUid;
 exports.deleteOne = deleteOne;
+exports.addTodosByUid = addTodosByUid;

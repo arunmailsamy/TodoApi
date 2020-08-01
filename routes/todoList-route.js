@@ -18,6 +18,8 @@ router.get("/getTodosByUid/:uid", todoListController.getTodoListByUid);
 
 router.patch("/updateTodosByUid/:uid", todoListController.updateTodosByUid);
 
+router.post("/addTodosByUid/:uid", todoListController.addTodosByUid);
+
 router.delete("/deleteAllTodos/:uid", todoListController.deleteAllTodos);
 
 router.delete("/deleteOne/:uid", todoListController.deleteOne);
