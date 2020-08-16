@@ -184,7 +184,6 @@ const deleteOne = async (req, res, next) => {
     const { todoId } = req.body;
     try {
         // const getit = await todoListSchema.findOne({ "creator": uid })
-        //console.log(getit.id);
         // const deleteit = getit.todos.find((element) => element.id === todoId);
         const deleted = await todoListSchema.updateOne({ "creator": uid }, {
             "$pull": {
