@@ -24,7 +24,7 @@ app.use("/todoapi", todoRoute);
 mongoose.connect("mongodb+srv://arun:6fJNuO5PfGNV9t7Y@cluster0.esywl.gcp.mongodb.net/TodoList?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
     .then(() => {
         console.log("Connected to DB");
-        app.listen(5000);
+        app.listen(process.env.PORT || 5000);
     }).catch((error) => {
         console.log(error)
         console.log("Error in connecting DB")
