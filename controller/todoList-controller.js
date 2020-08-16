@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const todoListSchema = require("../model/schemas/todoList-schema");
 const httpError = require("../model/http-error");
 const User = require("../model/schemas/user-schema");
-const { compareSync } = require("bcryptjs");
 
 const createTodoList = async (req, res, next) => {
     let { todos, creator } = req.body;
