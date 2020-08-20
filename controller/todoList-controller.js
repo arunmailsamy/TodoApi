@@ -95,24 +95,20 @@ const addTodosByUid = async (req, res, next) => {
     return next(
       new httpError("Specified user not available while creating Todos", 404)
     );
-  console.log(req.body);
+  let addTodo;
   try {
-    const addTodo = await todoListSchema.findOneAndUpdate(
+    addTodo = await todoListSchema.findOneAndUpdate(
       { creator: uid },
       {
         $push: { todos: req.body },
       },
-      { upsert: true, new: true },
-      (error, result) => {
-        if (error)
-          return next(new httpError("Error Occured while adding todos", 404));
-        res.status(201).json({ result: result.todos });
-      }
+      { upsert: true, new: true }
     );
   } catch (error) {
-    error = new httpError("Error Occured while adding todos", 500);
+    error = new httpError("Error Occured while adding todos", 404);
     return next(error);
   }
+  res.status(201).json({ result: addTodo.todos });
 };
 
 const getTodoList = async (req, res, next) => {
@@ -150,13 +146,11 @@ const getTodoListByUser = async (req, res, next) => {
   }
   if (!getWithUser.todos || getWithUser.todos.length === 0)
     return next(new httpError("No todos available for the User", 404));
-  res
-    .status(200)
-    .json({
-      result: getWithUser.todos[0].todos.map((itr) =>
-        itr.toObject({ getters: true })
-      ),
-    });
+  res.status(200).json({
+    result: getWithUser.todos[0].todos.map((itr) =>
+      itr.toObject({ getters: true })
+    ),
+  });
 };
 
 const getTodoListByUid = async (req, res, next) => {
