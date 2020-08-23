@@ -49,7 +49,7 @@ const createTodoList = async (req, res, next) => {
 
 const updateTodosByUid = async (req, res, next) => {
   const { uid } = req.params;
-  const { id, todoName, createdDate, updatedDate, isCompleted } = req.body;
+  const { _id, todoName, createdDate, updatedDate, isCompleted } = req.body;
   let checkUser;
   try {
     checkUser = await User.findById(uid);
@@ -62,24 +62,27 @@ const updateTodosByUid = async (req, res, next) => {
     return next(
       new httpError("Specified user not available while creating Todos", 404)
     );
-
-  const updated = await todoListSchema.findOneAndUpdate(
-    { creator: uid, todos: { $elemMatch: { _id: id } } },
-    {
-      $set: {
-        "todos.$.isCompleted": isCompleted,
-        "todos.$.todoName": todoName,
-        "todos.$.createdDate": createdDate,
-        "todos.$.updatedDate": updatedDate,
+  let updated;
+  try {
+    updated = await todoListSchema.findOneAndUpdate(
+      {
+        creator: uid,
+        todos: { $elemMatch: { _id } },
       },
-    },
-    { new: true, safe: true },
-    (error) => {
-      if (error)
-        return next(new httpError("Error occured while updating Todo", 500));
-    }
-  );
-  res.status(201).json({ result: "Updated successfully" });
+      {
+        $set: {
+          "todos.$.isCompleted": isCompleted,
+          "todos.$.todoName": todoName,
+          "todos.$.createdDate": createdDate,
+          "todos.$.updatedDate": updatedDate,
+        },
+      },
+      { new: true, safe: true }
+    );
+  } catch (error) {
+    return next(new httpError("Error occured while updating Todo", 500));
+  }
+  res.status(201).json(updated);
 };
 
 const addTodosByUid = async (req, res, next) => {
