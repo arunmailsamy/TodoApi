@@ -223,10 +223,11 @@ const deleteOne = async (req, res, next) => {
           console.log(error);
           return next(new httpError("Error occured while deleting Todo", 500));
         }
-        if (deletedObj.nmodified)
-          return res.status(201).json({ message: "Deleted Successfully" });
-        else
-          return res.status(404).json({ message: "Todo not found to delete" });
+        // console.log(deletedObj);
+        //  if (deletedObj.nModified)
+        return res.status(201).json({ message: "Deleted Successfully" });
+        //  else
+        // return res.status(404).json({ message: "Todo not found to delete" });
       }
     );
     // console.log(deleted)
